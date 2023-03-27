@@ -1,7 +1,7 @@
 import React,{useRef} from "react"
 import io from 'socket.io-client'
 
-export default function Join({setChatVisibility}) {
+export default function Join({setChatVisibility,setSocket}) {
 
     const usernameRef = useRef()
 
@@ -9,14 +9,24 @@ export default function Join({setChatVisibility}) {
         const username = usernameRef.current.value
         if (!username.trim()) return 
         const socket =  await io.connect('http://localhost:3001')
+        socket.emit('set_username',username)
+
+        // Estamos passando as ações para o componente pai App 
+        setSocket(socket)
         setChatVisibility(true)
+    }
+
+    const getEnterKey=(e)=>{
+        if(e.key == 'Enter')
+        handleSubmit()
     }
 
     return(
         <div>
             <h1>Join</h1>
-            <input type="text" ref={usernameRef} placeholder="Nome do usuário"/>
+            <input type="text" ref={usernameRef} placeholder="Nome do usuário" onKeyDown={(e)=>getEnterKey(e)}/>
             <button onClick={()=>handleSubmit()}>Entrar</button>
+
 
         </div>
     )
